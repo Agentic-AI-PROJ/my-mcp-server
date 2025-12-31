@@ -27,6 +27,7 @@ This is a custom **Model Context Protocol (MCP)** server that exposes specific t
     ```env
     PORT=3010
     WEATHER_API_KEY=your_weather_api_key
+    LLM_SERVICE_URL=LLM_SERVICE_URL
     ```
 
 3.  **Run Server**:
