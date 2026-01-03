@@ -50,7 +50,7 @@ export function registerSmartWebSearchTool(server: McpServer) {
 
                 const data: any = await response.json();
                 return {
-                    content: [{ type: "text", text: data.data }],
+                    content: [{ type: "text", text: JSON.stringify({ data: data.data, citations: data.citations }) }],
                 };
             } catch (error) {
                 return {
