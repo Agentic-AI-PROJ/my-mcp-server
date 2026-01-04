@@ -39,13 +39,13 @@ export async function detectStrategy(filePath: string, buffer: Buffer): Promise<
     if (ext === '.csv' || ext === '.tsv') return { strategy: ChunkingStrategy.TABLES, fileType: ext };
     if (ext === '.log' || filePath.includes('syslog')) return { strategy: ChunkingStrategy.LOGS, fileType: ext };
 
-    // 5. Intelligent Fallback for .txt or unknown
-    if (isLikelyJSON(buffer)) return { strategy: ChunkingStrategy.STRUCTURED, fileType: 'json' };
-    if (isLikelyTable(buffer)) return { strategy: ChunkingStrategy.TABLES, fileType: 'table' };
-
     // Explicit fallback for known prose extensions if MIME detection failed
     const proseExts = ['.txt', '.rtf', '.doc', '.docx', '.ppt', '.pptx'];
     if (proseExts.includes(ext)) return { strategy: ChunkingStrategy.PROSE, fileType: ext };
+
+    // 5. Intelligent Fallback for .txt or unknown
+    if (isLikelyJSON(buffer)) return { strategy: ChunkingStrategy.STRUCTURED, fileType: 'json' };
+    if (isLikelyTable(buffer)) return { strategy: ChunkingStrategy.TABLES, fileType: 'table' };
 
     return { strategy: ChunkingStrategy.PROSE, fileType: ext }; // Default to paragraph splitting
 }

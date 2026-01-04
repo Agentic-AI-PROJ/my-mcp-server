@@ -8,6 +8,8 @@ import { extractTextFromPdf } from "../utils/rag/pdfToText";
 const CHROMA_DB_URL = process.env.CHROMA_DB_URL || 'http://localhost:8000';
 const DEFAULT_MODEL = 'gemini/gemini-2.5-flash-lite';
 
+const UNSUPPORTED_FILE_TYPES = ['.doc', 'docx', '.ppt', 'pptx', '.rtf'];
+
 export function registerRAGTool(server: McpServer) {
     server.tool(
         "ingest_document",
@@ -34,6 +36,17 @@ export function registerRAGTool(server: McpServer) {
                     const { strategy, fileType } = await detectStrategy(document_url, buffer);
                     if (fileType === 'pdf') {
                         content = await extractTextFromPdf(document_url);
+                    }
+                    if (UNSUPPORTED_FILE_TYPES.includes(fileType)) {
+                        console.error(`Unsupported file type: ${fileType}`);
+                        params.data.push({
+                            url: document_url,
+                            fileType,
+                            strategy,
+                            content,
+                            error: `Unsupported file type: ${fileType}`
+                        });
+                        continue;
                     }
                     const { chunks } = await splitContent(strategy, fileType, content);
 
