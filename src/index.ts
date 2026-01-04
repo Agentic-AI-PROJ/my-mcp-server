@@ -7,6 +7,7 @@ import { registerGetWeatherTool } from "./tools/get-weather";
 import { registerFireTVTool } from "./tools/firetv";
 import { registerAnalyzeImageTool } from "./tools/analyze-image";
 import { registerSmartWebSearchTool } from "./tools/smart-web-search";
+import { registerRAGTool } from "./tools/rag";
 
 const app = express();
 app.use(cors());
@@ -21,6 +22,7 @@ registerGetWeatherTool(server);
 registerFireTVTool(server);
 registerAnalyzeImageTool(server);
 registerSmartWebSearchTool(server);
+registerRAGTool(server);
 
 const transports = new Map<string, SSEServerTransport>();
 
