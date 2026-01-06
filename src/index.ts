@@ -13,7 +13,7 @@ const app = express();
 app.use(cors());
 
 const server = new McpServer({
-    name: "mcp-server",
+    name: "my-mcp-server",
     version: "1.0.0",
 });
 

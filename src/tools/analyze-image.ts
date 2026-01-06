@@ -3,7 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 const LLM_SERVICE_URL = process.env.LLM_SERVICE_URL || 'http://localhost:3005';
-const DEFAULT_MODEL = 'gemini/gemini-2.5-flash-lite';
+const IMAGE_MODEL = process.env.IMAGE_MODEL || 'gemini/gemini-2.5-flash-lite';
 
 export function registerAnalyzeImageTool(server: McpServer) {
     server.tool(
@@ -19,7 +19,7 @@ export function registerAnalyzeImageTool(server: McpServer) {
             try {
                 // Construct the payload for the LLM service
                 const payload = {
-                    model_id: DEFAULT_MODEL,
+                    model_id: IMAGE_MODEL,
                     messages: [
                         {
                             role: "user",
