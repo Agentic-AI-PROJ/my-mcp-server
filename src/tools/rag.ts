@@ -17,11 +17,32 @@ const UNSUPPORTED_FILE_TYPES = ['.doc', 'docx', '.ppt', 'pptx', '.rtf'];
 export function registerRAGTool(server: McpServer) {
     server.tool(
         "ingest_document",
-        "Ingest a document into the knowledge base.",
+        "Store one or more external documents into the knowledge base so they can be retrieved later. " +
+        "Use this when the user provides document URLs that should be indexed, remembered, or made searchable. " +
+        "This tool does not answer questions — it only stores information for future retrieval." +
+        "This tool always stores data under a specific agent, so agent_id is required.",
         {
-            document_urls: z.array(z.string()).describe("List of document URLs to ingest."),
-            agent_id: z.string().optional().describe("ID of the agent to route to agent_kb"),
-            conversation_id: z.string().optional().describe("ID of the conversation to route to conversation_kb")
+            document_urls: z
+                .array(z.string())
+                .describe(
+                    "List of publicly accessible document URLs to ingest into the knowledge base. " +
+                    "Each URL should point to a file whose content should be indexed and stored for later retrieval."
+                ),
+
+            agent_id: z
+                .string()
+                .describe(
+                    "REQUIRED. Identifier of the agent whose knowledge base this document should be stored in. " +
+                    "Every ingestion must be associated with exactly one agent."
+                ),
+
+            conversation_id: z
+                .string()
+                .optional()
+                .describe(
+                    "Optional conversation identifier. If provided, the documents will be stored in the conversation-specific knowledge base " +
+                    "and will only be retrieved within this conversation."
+                )
         },
         async ({ document_urls, agent_id, conversation_id }) => {
             try {
@@ -197,12 +218,34 @@ ${analysis.key_propositions.map(p => `- ${p}`).join('\n')}
 
     server.tool(
         "retrieve_context",
-        "Retrieve relevant context from the knowledge base based on a query.",
+        "Search the knowledge base for information relevant to a query and return the most relevant stored content. " +
+        "Use this when answering questions that may depend on previously ingested documents or stored knowledge.",
         {
-            query: z.string().describe("The query to search for."),
-            agent_id: z.string().optional().describe("ID of the agent to route to agent_kb"),
-            conversation_id: z.string().optional().describe("ID of the conversation to route to conversation_kb"),
-            top_k: z.number().optional().describe("Number of results to return. Default is 5.").default(5)
+            query: z
+                .string()
+                .describe(
+                    "Natural language search query describing what information to retrieve from the knowledge base. " +
+                    "This should reflect what you are looking for, not the final answer you want to give."
+                ),
+            agent_id: z
+                .string()
+                .optional()
+                .describe(
+                    "Optional agent identifier. If provided, the search will be limited to documents stored under this agent_id."
+                ),
+            conversation_id: z
+                .string()
+                .optional()
+                .describe(
+                    "Optional conversation identifier. If provided, the search will be limited to documents stored under this conversation."
+                ),
+            top_k: z
+                .number()
+                .optional()
+                .describe(
+                    "Maximum number of relevant results to return. Use a higher value if the query is broad or requires more context. Default is 5."
+                )
+                .default(5)
         },
         async ({ query, agent_id, conversation_id, top_k }) => {
             try {
