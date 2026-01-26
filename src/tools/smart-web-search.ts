@@ -3,7 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 const LLM_SERVICE_URL = process.env.LLM_SERVICE_URL || 'http://localhost:3005';
-const DEFAULT_MODEL = 'gemini/gemini-2.5-flash-lite';
+const WEB_SEARCH_MODEL = process.env.WEB_SEARCH_MODEL || 'gemini/gemini-2.5-flash-lite';
 
 export function registerSmartWebSearchTool(server: McpServer) {
     server.tool(
@@ -23,7 +23,7 @@ export function registerSmartWebSearchTool(server: McpServer) {
                     ? `${systemContext}\n\nResearch these specific topics and provide a consolidated factual report:\n${queries.map(q => `- ${q}`).join('\n')}`
                     : `${systemContext}\n\nQuery: ${queries[0]}`;
                 const payload = {
-                    model_id: DEFAULT_MODEL,
+                    model_id: WEB_SEARCH_MODEL,
                     messages: [
                         {
                             role: "user",
@@ -50,7 +50,7 @@ export function registerSmartWebSearchTool(server: McpServer) {
 
                 const data: any = await response.json();
                 return {
-                    content: [{ type: "text", text: data.data }],
+                    content: [{ type: "text", text: JSON.stringify({ data: data.data, citations: data.citations }) }],
                 };
             } catch (error) {
                 return {

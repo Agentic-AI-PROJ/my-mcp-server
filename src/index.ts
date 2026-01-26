@@ -7,12 +7,13 @@ import { registerGetWeatherTool } from "./tools/get-weather";
 import { registerFireTVTool } from "./tools/firetv";
 import { registerAnalyzeImageTool } from "./tools/analyze-image";
 import { registerSmartWebSearchTool } from "./tools/smart-web-search";
+import { registerRAGTool } from "./tools/rag";
 
 const app = express();
 app.use(cors());
 
 const server = new McpServer({
-    name: "mcp-server",
+    name: "my-mcp-server",
     version: "1.0.0",
 });
 
@@ -21,6 +22,7 @@ registerGetWeatherTool(server);
 registerFireTVTool(server);
 registerAnalyzeImageTool(server);
 registerSmartWebSearchTool(server);
+registerRAGTool(server);
 
 const transports = new Map<string, SSEServerTransport>();
 
